@@ -1,0 +1,3 @@
+-keep,allowobfuscation,allowshrinking class com.laniao.presentation.viewmodel.AddEntryViewModel
+-keep,allowobfuscation,allowshrinking class com.laniao.presentation.viewmodel.AddEntryViewModel
+-keep,allowobfuscation,allowshrinking class com.laniao.presentation.viewmodel.CalendarViewModel

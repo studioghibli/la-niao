@@ -1,0 +1,169 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.laniao"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <permission
+11-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:22:5-24:47
+12        android:name="com.laniao.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.laniao.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:5:5-35:19
+18        android:name="com.laniao.LaNiaoApplication"
+18-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:6:9-42
+19        android:allowBackup="true"
+19-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:7:9-35
+20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+20-->[androidx.core:core:1.15.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\c8e69835da0efa9f18052e194845fe61\transformed\core-1.15.0\AndroidManifest.xml:28:18-86
+21        android:debuggable="true"
+22        android:extractNativeLibs="false"
+23        android:icon="@mipmap/ic_launcher"
+23-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:8:9-43
+24        android:label="@string/app_name"
+24-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:9:9-41
+25        android:roundIcon="@mipmap/ic_launcher_round"
+25-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:10:9-54
+26        android:supportsRtl="true"
+26-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:11:9-35
+27        android:theme="@style/Theme.LaNiao" >
+27-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:12:9-44
+28        <activity
+28-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:15:9-24:20
+29            android:name="com.laniao.MainActivity"
+29-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:16:13-41
+30            android:exported="true"
+30-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:17:13-36
+31            android:screenOrientation="portrait"
+31-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:18:13-49
+32            android:theme="@style/Theme.LaNiao" >
+32-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:19:13-48
+33            <intent-filter>
+33-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:20:13-23:29
+34                <action android:name="android.intent.action.MAIN" />
+34-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:21:17-69
+34-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:21:25-66
+35
+36                <category android:name="android.intent.category.LAUNCHER" />
+36-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:22:17-77
+36-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:22:27-74
+37            </intent-filter>
+38        </activity>
+39
+40        <provider
+41            android:name="androidx.core.content.FileProvider"
+41-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:27:13-62
+42            android:authorities="com.laniao.provider"
+42-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:28:13-60
+43            android:exported="false"
+43-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:29:13-37
+44            android:grantUriPermissions="true" >
+44-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:30:13-47
+45            <meta-data
+45-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:31:13-33:54
+46                android:name="android.support.FILE_PROVIDER_PATHS"
+46-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:32:17-67
+47                android:resource="@xml/file_paths" />
+47-->C:\Users\lindhe\workshop\AgentWorkshop\01-greenfield\LaNiao\app\app\src\main\AndroidManifest.xml:33:17-51
+48        </provider>
+49        <provider
+49-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+50            android:name="androidx.startup.InitializationProvider"
+50-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+51            android:authorities="com.laniao.androidx-startup"
+51-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+52            android:exported="false" >
+52-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+53            <meta-data
+53-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+54                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+54-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+55                android:value="androidx.startup" />
+55-->[androidx.emoji2:emoji2:1.3.0] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\e62090a7cc3eda52a87cfc1916fb8f7d\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+56            <meta-data
+56-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\4ceae5dec63835122718bc6d6fa431e2\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+57                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+57-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\4ceae5dec63835122718bc6d6fa431e2\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+58                android:value="androidx.startup" />
+58-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\4ceae5dec63835122718bc6d6fa431e2\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+59            <meta-data
+59-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+60                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+60-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+61                android:value="androidx.startup" />
+61-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+62        </provider>
+63
+64        <activity
+64-->[androidx.compose.ui:ui-test-manifest:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\7d965ab8551831ab21d9024e5767ba8b\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:23:9-25:39
+65            android:name="androidx.activity.ComponentActivity"
+65-->[androidx.compose.ui:ui-test-manifest:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\7d965ab8551831ab21d9024e5767ba8b\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:24:13-63
+66            android:exported="true" />
+66-->[androidx.compose.ui:ui-test-manifest:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\7d965ab8551831ab21d9024e5767ba8b\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:25:13-36
+67        <activity
+67-->[androidx.compose.ui:ui-tooling-android:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0286877637b868ea93d65a18b8345484\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+68            android:name="androidx.compose.ui.tooling.PreviewActivity"
+68-->[androidx.compose.ui:ui-tooling-android:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0286877637b868ea93d65a18b8345484\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+69            android:exported="true" />
+69-->[androidx.compose.ui:ui-tooling-android:1.7.6] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0286877637b868ea93d65a18b8345484\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+70
+71        <service
+71-->[androidx.room:room-runtime:2.6.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0486169e590dca1ccb1e757ade5889a6\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+72            android:name="androidx.room.MultiInstanceInvalidationService"
+72-->[androidx.room:room-runtime:2.6.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0486169e590dca1ccb1e757ade5889a6\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+73            android:directBootAware="true"
+73-->[androidx.room:room-runtime:2.6.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0486169e590dca1ccb1e757ade5889a6\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+74            android:exported="false" />
+74-->[androidx.room:room-runtime:2.6.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\0486169e590dca1ccb1e757ade5889a6\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+75
+76        <receiver
+76-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+77            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+77-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+78            android:directBootAware="false"
+78-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+79            android:enabled="true"
+79-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+80            android:exported="true"
+80-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+81            android:permission="android.permission.DUMP" >
+81-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+82            <intent-filter>
+82-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+83                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+84            </intent-filter>
+85            <intent-filter>
+85-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+86                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+87            </intent-filter>
+88            <intent-filter>
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+89                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+90            </intent-filter>
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+92                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\lindhe\.gradle\caches\8.10.2\transforms\ac2e043c998cea43bd6c591b0d99830c\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+93            </intent-filter>
+94        </receiver>
+95    </application>
+96
+97</manifest>
