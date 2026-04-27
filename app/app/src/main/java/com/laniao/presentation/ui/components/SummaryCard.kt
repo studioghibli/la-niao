@@ -79,6 +79,11 @@ fun SummaryCard(
                 SummaryStatItem(
                     value = summary.totalLeakCount.toString(),
                     label = "Leaks",
+                    emoji = "\uD83D\uDCA7"
+                )
+                SummaryStatItem(
+                    value = summary.burstCount.toString(),
+                    label = "Burst",
                     emoji = "\uD83C\uDF88"
                 )
             }

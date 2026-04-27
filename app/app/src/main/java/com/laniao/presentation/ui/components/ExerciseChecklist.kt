@@ -88,36 +88,74 @@ fun ExerciseChecklist(
                     color = com.laniao.presentation.theme.LaNiaoColors.ExerciseAccent
                 )
             } else {
-                // Simple emoji row — tap to complete
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
+                // Group by category
+                val grouped = exercises.groupBy { it.exerciseType.category }
+                val kegelExercises = grouped[ExerciseCategory.KEGEL] ?: emptyList()
+                val relaxationExercises = grouped[ExerciseCategory.RELAXATION] ?: emptyList()
+
+                if (kegelExercises.isNotEmpty()) {
+                    Text(
+                        text = "Kegel",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = com.laniao.presentation.theme.LaNiaoColors.ExerciseAccent.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    ExerciseTypeRow(
+                        exercises = kegelExercises,
+                        onComplete = onComplete
+                    )
+                }
+
+                if (relaxationExercises.isNotEmpty()) {
+                    Text(
+                        text = "Relaxation",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = com.laniao.presentation.theme.LaNiaoColors.ExerciseAccent.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                    ExerciseTypeRow(
+                        exercises = relaxationExercises,
+                        onComplete = onComplete
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExerciseTypeRow(
+    exercises: List<ExerciseStatus>,
+    onComplete: (ExerciseType, Long?) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        exercises.forEach { status ->
+            Surface(
+                onClick = { if (!status.isComplete) onComplete(status.exerciseType, status.scheduleItemId) },
+                shape = CircleShape,
+                color = if (status.isComplete) com.laniao.presentation.theme.LaNiaoColors.ExerciseCardBackground else MaterialTheme.colorScheme.surface,
+                tonalElevation = 1.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    exercises.forEach { status ->
-                        Surface(
-                            onClick = { if (!status.isComplete) onComplete(status.exerciseType, status.scheduleItemId) },
-                            shape = CircleShape,
-                            color = if (status.isComplete) com.laniao.presentation.theme.LaNiaoColors.ExerciseCardBackground else MaterialTheme.colorScheme.surface,
-                            tonalElevation = 1.dp
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = if (status.isComplete) "\u2705" else status.exerciseType.emoji,
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                                Text(
-                                    text = "${status.completedToday}/${status.sessionsRequired}",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = if (status.isComplete) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
+                    Text(
+                        text = if (status.isComplete) "\u2705" else status.exerciseType.emoji,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "${status.completedToday}/${status.sessionsRequired}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (status.isComplete) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

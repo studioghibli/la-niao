@@ -44,6 +44,7 @@ class GetTodaySummaryUseCase @Inject constructor(
             val urgeOnlyEntries = entries.filter { it.isUrgeOnly }
             val leakOnlyEntries = entries.filter { it.isLeakOnly }
             val totalLeakEntries = entries.filter { it.hasLeak }
+            val burstEntries = entries.filter { it.urgency == com.laniao.domain.model.Urgency.BURST }
             
             val scheduledEntries = voidEntries.filter { it.scheduledTime != null }
             val unscheduledEntries = voidEntries.filter { it.scheduledTime == null }
@@ -53,6 +54,7 @@ class GetTodaySummaryUseCase @Inject constructor(
                 urgeOnlyCount = urgeOnlyEntries.size,
                 leakOnlyCount = leakOnlyEntries.size,
                 totalLeakCount = totalLeakEntries.size,
+                burstCount = burstEntries.size,
                 scheduledCount = scheduledEntries.size,
                 unscheduledCount = unscheduledEntries.size,
                 missedCount = 0

@@ -53,10 +53,10 @@ fun ScheduleProgressList(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProgressSummaryItem(count = completed, label = "Done", emoji = "✅")
-                    ProgressSummaryItem(count = overdue, label = "Overdue", emoji = "⏰")
-                    ProgressSummaryItem(count = missed, label = "Missed", emoji = "❌")
-                    ProgressSummaryItem(count = upcoming, label = "Upcoming", emoji = "⏳")
+                    ProgressSummaryItem(count = completed, label = "Done", emoji = "✅", modifier = Modifier.weight(1f))
+                    ProgressSummaryItem(count = overdue, label = "Overdue", emoji = "⏰", modifier = Modifier.weight(1f))
+                    ProgressSummaryItem(count = missed, label = "Missed", emoji = "❌", modifier = Modifier.weight(1f))
+                    ProgressSummaryItem(count = upcoming, label = "Upcoming", emoji = "⏳", modifier = Modifier.weight(1f))
                 }
 
                 // Individual time items

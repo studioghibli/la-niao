@@ -102,7 +102,9 @@ data class CalendarUiState(
     val scrollToNowAnimated: Boolean = false,
     val timelineScrollOffsetPx: Float = 0f,
     val timelineHourHeightDp: Float = 60f,
-    val activeFilters: Set<EntryTypeFilter> = emptySet() // empty = show all
+    val activeFilters: Set<EntryTypeFilter> = emptySet(), // empty = show all
+    /** Incremented to request a one-shot scroll-to-bottom in the feed list */
+    val feedScrollToBottomToken: Int = 0
 )
 
 /**
@@ -266,11 +268,17 @@ class CalendarViewModel @Inject constructor(
      * Load the chronological feed starting from today only.
      * Past entries are loaded on demand when user scrolls up.
      */
-    private fun loadFeed() {
+    private fun loadFeed(scrollToBottom: Boolean = true) {
         feedJob?.cancel()
         val zoneId = ZoneId.systemDefault()
         val today = clock.now().atZone(zoneId).toLocalDate()
-        _uiState.update { it.copy(feedEarliestDate = today, isLoading = true) }
+        _uiState.update {
+            it.copy(
+                feedEarliestDate = today,
+                isLoading = true,
+                feedScrollToBottomToken = if (scrollToBottom) it.feedScrollToBottomToken + 1 else it.feedScrollToBottomToken
+            )
+        }
 
         feedJob = viewModelScope.launch(dispatchers.io) {
             peeEntryRepository.getByDateRange(today, today)

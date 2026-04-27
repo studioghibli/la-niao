@@ -13,6 +13,8 @@ data class DailySummary(
     val leakOnlyCount: Int = 0,
     /** Total entries with any leak (standalone + void-with-leak) */
     val totalLeakCount: Int = 0,
+    /** Number of entries with burst urgency */
+    val burstCount: Int = 0,
     /** Number of scheduled voids completed */
     val scheduledCount: Int = 0,
     /** Number of unscheduled voids */

@@ -1,7 +1,6 @@
 package com.laniao.util
 
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 /**
  * Shared date/time formatters used throughout the app.
@@ -32,8 +31,8 @@ object DateFormatters {
     /** "yyyy-MM-dd" — e.g. "2026-03-14". File names and exports. */
     val DATE_FILE: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    /** Locale-appropriate short time — e.g. "2:30 PM". */
-    val TIME_SHORT: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    /** "HH:mm" — e.g. "14:30". All UI time display uses 24-hour format. */
+    val TIME_SHORT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     /** "HH:mm:ss" — e.g. "14:30:00". CSV export time. */
     val TIME_CSV: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")

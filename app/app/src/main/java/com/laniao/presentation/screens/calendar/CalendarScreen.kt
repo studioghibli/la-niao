@@ -358,6 +358,7 @@ fun CalendarScreen(
                                 feedItems = filterFeedItems(uiState.feedItems, uiState.activeFilters),
                                 feedEarliestDate = uiState.feedEarliestDate,
                                 isLoadingMore = uiState.isLoadingMore,
+                                scrollToBottomToken = uiState.feedScrollToBottomToken,
                                 onLoadMore = { viewModel.loadMoreHistory() },
                                 onPeeEntryClick = {
                                     viewModel.loadPeeEntryForEdit(it.id) { entry ->
@@ -555,7 +556,7 @@ fun CalendarScreen(
         val selectedDate = uiState.selectedDate
         val defaultDate = if (selectedDate.isAfter(java.time.LocalDate.now())) java.time.LocalDate.now() else selectedDate
         val unclaimedTimes = uiState.timelineItems
-            .filter { it.isScheduled && !it.isClaimed }
+            .filter { it.isScheduled && !it.isClaimed && !it.isManuallyMissed }
             .map { it.scheduledTime ?: it.time }
         com.laniao.presentation.ui.components.AddEntryDialog(
             onDismiss = { showAddEntryDialog = false },
@@ -568,7 +569,7 @@ fun CalendarScreen(
     // Edit pee entry dialog
     editingPeeEntry?.let { entry ->
         val editUnclaimedTimes = uiState.timelineItems
-            .filter { it.isScheduled && !it.isClaimed }
+            .filter { it.isScheduled && !it.isClaimed && !it.isManuallyMissed }
             .map { it.scheduledTime ?: it.time }
         com.laniao.presentation.ui.components.AddEntryDialog(
             onDismiss = { editingPeeEntry = null },
@@ -618,6 +619,7 @@ private fun ChronologicalFeed(
     feedItems: List<FeedItem>,
     feedEarliestDate: java.time.LocalDate,
     isLoadingMore: Boolean,
+    scrollToBottomToken: Int,
     onLoadMore: () -> Unit,
     onPeeEntryClick: (com.laniao.domain.model.PeeEntry) -> Unit,
     onPeeEntryDelete: (com.laniao.domain.model.PeeEntry) -> Unit,
@@ -631,7 +633,10 @@ private fun ChronologicalFeed(
     val dateFormatter = remember { com.laniao.util.DateFormatters.DATE_FEED }
     val zoneId = remember { java.time.ZoneId.systemDefault() }
 
-    // Only load more when user hits the very top AND the list can't scroll further back
+    // Count total LazyColumn items (headers + data rows + loading indicator)
+    val dateGroups = remember(feedItems) { feedItems.map { it.date }.distinct() }
+
+    // Load more when user scrolls to the top
     val shouldLoadMore by remember {
         derivedStateOf {
             !isLoadingMore && (
@@ -643,43 +648,57 @@ private fun ChronologicalFeed(
             )
         }
     }
-    // Track item count before loading more to preserve scroll position
-    var itemCountBeforeLoad by remember { mutableIntStateOf(feedItems.size) }
+
+    // Anchor key for scroll restoration after load-more
+    var anchorKey by remember { mutableStateOf<String?>(null) }
+    var anchorOffset by remember { mutableIntStateOf(0) }
+    var isLoadingHistory by remember { mutableStateOf(false) }
+
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            itemCountBeforeLoad = feedItems.size
+            // Capture anchor: the first visible real item key
+            val firstIdx = listState.firstVisibleItemIndex
+            val layoutInfo = listState.layoutInfo
+            val firstVisible = layoutInfo.visibleItemsInfo.firstOrNull { it.key is String && !(it.key as String).startsWith("loading") }
+            anchorKey = firstVisible?.key as? String
+            anchorOffset = firstVisible?.offset ?: 0
+            isLoadingHistory = true
             onLoadMore()
         }
     }
-    // After loading more items, scroll to maintain position (new items added at top)
-    LaunchedEffect(feedItems.size) {
-        if (itemCountBeforeLoad > 0 && feedItems.size > itemCountBeforeLoad) {
-            val newItemsCount = feedItems.size - itemCountBeforeLoad
-            listState.scrollToItem(
-                listState.firstVisibleItemIndex + newItemsCount,
-                listState.firstVisibleItemScrollOffset
-            )
-            itemCountBeforeLoad = feedItems.size
+
+    // After load-more completes, restore scroll position by finding the anchor key
+    LaunchedEffect(feedItems.size, isLoadingHistory) {
+        if (isLoadingHistory && !isLoadingMore && anchorKey != null) {
+            // Find the anchor key in the new layout
+            // Build the list of keys in order: loading?, then (header, items)* 
+            val allKeys = mutableListOf<String>()
+            if (isLoadingMore) allKeys.add("loading")
+            var lastDate: java.time.LocalDate? = null
+            feedItems.forEach { item ->
+                if (item.date != lastDate) {
+                    lastDate = item.date
+                    allKeys.add("header_${item.date}")
+                }
+                allKeys.add(item.key)
+            }
+            val anchorIndex = allKeys.indexOf(anchorKey)
+            if (anchorIndex >= 0) {
+                listState.scrollToItem(anchorIndex, anchorOffset)
+            }
+            isLoadingHistory = false
+            anchorKey = null
         }
     }
 
-    // Scroll to bottom (newest) when feed resets (e.g., clicking Today)
-    var lastEarliestDate by remember { mutableStateOf(feedEarliestDate) }
-    LaunchedEffect(feedEarliestDate) {
-        if (feedEarliestDate != lastEarliestDate) {
-            lastEarliestDate = feedEarliestDate
-            // Feed was reset — scroll to bottom on next items update
-            if (feedItems.isNotEmpty()) {
-                listState.scrollToItem(feedItems.size - 1)
-            }
-        }
-    }
-    // Scroll to bottom on initial load
-    var hasScrolledToBottom by remember { mutableStateOf(false) }
-    LaunchedEffect(feedItems.size) {
-        if (feedItems.isNotEmpty() && !hasScrolledToBottom) {
-            listState.scrollToItem(feedItems.size - 1)
-            hasScrolledToBottom = true
+    // Scroll to bottom on initial load or explicit request (Today button)
+    var lastScrollToken by remember { mutableIntStateOf(scrollToBottomToken) }
+    LaunchedEffect(scrollToBottomToken, feedItems.size) {
+        if (scrollToBottomToken != lastScrollToken && feedItems.isNotEmpty()) {
+            // Calculate total item count including headers
+            val totalItems = dateGroups.size + feedItems.size
+            listState.scrollToItem(totalItems - 1)
+            lastScrollToken = scrollToBottomToken
         }
     }
 

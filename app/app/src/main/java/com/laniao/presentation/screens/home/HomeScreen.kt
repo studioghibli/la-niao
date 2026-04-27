@@ -315,7 +315,10 @@ fun HomeScreen(
     // Add Entry Dialog (void/urge/leak)
     if (showAddEntryDialog) {
         val unclaimedTimes = uiState.scheduleProgress
-            .filter { it.status == com.laniao.domain.usecase.ScheduledTimeStatus.UPCOMING || it.status == com.laniao.domain.usecase.ScheduledTimeStatus.MISSED }
+            .filter {
+                it.status == com.laniao.domain.usecase.ScheduledTimeStatus.UPCOMING ||
+                it.status == com.laniao.domain.usecase.ScheduledTimeStatus.OVERDUE
+            }
             .map { it.scheduledTime }
         com.laniao.presentation.ui.components.AddEntryDialog(
             onDismiss = { showAddEntryDialog = false },

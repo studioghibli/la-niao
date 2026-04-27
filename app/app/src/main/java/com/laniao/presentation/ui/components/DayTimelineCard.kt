@@ -1,6 +1,7 @@
 package com.laniao.presentation.ui.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -24,11 +25,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,14 +40,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.laniao.domain.model.DrinkEntry
 import com.laniao.domain.model.DrinkType
 import com.laniao.domain.model.ExerciseCompletion
@@ -53,6 +59,7 @@ import com.laniao.domain.model.PeeColor
 import com.laniao.domain.usecase.TimelineItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -92,10 +99,24 @@ fun DayTimelineCard(
 ) {
     var currentNow by remember { mutableStateOf(LocalDateTime.now()) }
 
-    // Update current time every minute for the red line indicator
+    // Refresh time on lifecycle resume (e.g., screen on after being off)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                currentNow = LocalDateTime.now()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // Update current time aligned to minute boundaries
     LaunchedEffect(Unit) {
         while (isActive) {
-            delay(60_000L)
+            val now = java.time.LocalTime.now()
+            val delayMs = (60 - now.second) * 1000L - now.nano / 1_000_000L
+            delay(delayMs.coerceAtLeast(1000L))
             currentNow = LocalDateTime.now()
         }
     }
@@ -104,10 +125,9 @@ fun DayTimelineCard(
     var scrollOffsetPx by remember { mutableFloatStateOf(initialScrollOffsetPx) }
     var horizontalDragPx by remember { mutableFloatStateOf(0f) }
     val density = LocalDensity.current
-    val is24Hour = android.text.format.DateFormat.is24HourFormat(LocalContext.current)
-    val hourFormatter = remember(is24Hour) {
-        if (is24Hour) DateTimeFormatter.ofPattern("HH:00")
-        else DateTimeFormatter.ofPattern("h:00 a")
+    val is24Hour = true // Always use 24h format for consistency
+    val hourFormatter = remember {
+        DateTimeFormatter.ofPattern("HH:00")
     }
 
     // Animate scroll to current time when pending (one-shot, then releases control)
@@ -131,6 +151,9 @@ fun DayTimelineCard(
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+    val flingAnimatable = remember { Animatable(0f) }
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.surface,
@@ -143,24 +166,29 @@ fun DayTimelineCard(
                     .clipToBounds()
                     .pointerInput(Unit) {
                         awaitEachGesture {
+                            // Cancel any ongoing fling when new gesture starts
+                            coroutineScope.launch { flingAnimatable.stop() }
+
                             awaitFirstDown(requireUnconsumed = false)
+                            val velocityTracker = VelocityTracker()
+                            var wasPinch = false
                             do {
                                 val event = awaitPointerEvent()
                                 val pointers = event.changes
                                 if (pointers.size >= 2) {
+                                    wasPinch = true
                                     // Two+ fingers: pinch to zoom
                                     val zoom = event.calculateZoom()
                                     if (zoom != 1f) {
                                         hourHeightDp = (hourHeightDp * zoom)
                                             .coerceIn(MIN_HOUR_HEIGHT_DP, MAX_HOUR_HEIGHT_DP)
-                                        // Clamp scroll so content stays visible after zoom
                                         val newTotalPx = hourHeightDp * TOTAL_HOURS * density.density
                                         val newMaxScroll = (newTotalPx - size.height).coerceAtLeast(0f)
                                         scrollOffsetPx = scrollOffsetPx.coerceIn(0f, newMaxScroll)
                                         pointers.forEach { it.consume() }
                                     }
                                 } else if (pointers.size == 1) {
-                                    // Single finger: scroll vertically + track horizontal
+                                    val change = pointers.first()
                                     val pan = event.calculatePan()
                                     if (pan.y != 0f) {
                                         val totalPx = hourHeightDp * TOTAL_HOURS * density.density
@@ -168,6 +196,11 @@ fun DayTimelineCard(
                                         scrollOffsetPx = (scrollOffsetPx - pan.y).coerceIn(0f, maxScroll)
                                         pointers.forEach { if (it.positionChanged()) it.consume() }
                                     }
+                                    // Track velocity for fling
+                                    velocityTracker.addPosition(
+                                        change.uptimeMillis,
+                                        change.position
+                                    )
                                     horizontalDragPx += pan.x
                                 }
                             } while (pointers.any { it.pressed })
@@ -178,6 +211,29 @@ fun DayTimelineCard(
                                 onSwipeRight?.invoke()
                             } else if (horizontalDragPx < -300f) {
                                 onSwipeLeft?.invoke()
+                            } else if (!wasPinch) {
+                                // Launch fling for vertical scroll
+                                val velocity = velocityTracker.calculateVelocity()
+                                val yVelocity = velocity.y
+                                if (kotlin.math.abs(yVelocity) > 100f) {
+                                    coroutineScope.launch {
+                                        flingAnimatable.snapTo(scrollOffsetPx)
+                                        flingAnimatable.animateDecay(
+                                            initialVelocity = -yVelocity,
+                                            animationSpec = exponentialDecay(frictionMultiplier = 1.5f)
+                                        ) {
+                                            val totalPx = hourHeightDp * TOTAL_HOURS * density.density
+                                            val maxScroll = (totalPx - size.height).coerceAtLeast(0f)
+                                            val clamped = value.coerceIn(0f, maxScroll)
+                                            scrollOffsetPx = clamped
+                                            // Stop fling at bounds by snapping (cancels the animation)
+                                            if (clamped != value) {
+                                                launch { flingAnimatable.stop() }
+                                            }
+                                        }
+                                        onScrollStateChanged?.invoke(scrollOffsetPx, hourHeightDp)
+                                    }
+                                }
                             }
                             horizontalDragPx = 0f
                         }
