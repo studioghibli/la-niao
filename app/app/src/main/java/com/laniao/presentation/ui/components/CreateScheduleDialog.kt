@@ -217,7 +217,7 @@ fun CreateScheduleDialog(
 
     // Start time picker
     if (showStartTimePicker) {
-        val tpState = rememberTimePickerState(initialHour = startTime.hour, initialMinute = startTime.minute)
+        val tpState = rememberTimePickerState(initialHour = startTime.hour, initialMinute = startTime.minute, is24Hour = true)
         androidx.compose.ui.window.Dialog(onDismissRequest = { showStartTimePicker = false }) {
             androidx.compose.material3.Surface(shape = MaterialTheme.shapes.extraLarge, tonalElevation = 6.dp) {
                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -234,7 +234,7 @@ fun CreateScheduleDialog(
 
     // End time picker
     if (showEndTimePicker) {
-        val tpState = rememberTimePickerState(initialHour = endTime.hour, initialMinute = endTime.minute)
+        val tpState = rememberTimePickerState(initialHour = endTime.hour, initialMinute = endTime.minute, is24Hour = true)
         androidx.compose.ui.window.Dialog(onDismissRequest = { showEndTimePicker = false }) {
             androidx.compose.material3.Surface(shape = MaterialTheme.shapes.extraLarge, tonalElevation = 6.dp) {
                 Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {

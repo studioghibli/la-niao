@@ -354,7 +354,8 @@ fun HomeScreen(
         @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
         val timePickerState = androidx.compose.material3.rememberTimePickerState(
             initialHour = java.time.LocalTime.now().hour,
-            initialMinute = java.time.LocalTime.now().minute
+            initialMinute = java.time.LocalTime.now().minute,
+            is24Hour = true
         )
 
         androidx.compose.material3.AlertDialog(

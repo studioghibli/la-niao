@@ -57,7 +57,8 @@ fun AddExerciseDialog(
     var selectedType by remember { mutableStateOf(ExerciseType.STANDARD_KEGEL) }
     val timePickerState = rememberTimePickerState(
         initialHour = LocalTime.now().hour,
-        initialMinute = LocalTime.now().minute
+        initialMinute = LocalTime.now().minute,
+        is24Hour = true
     )
 
     AlertDialog(

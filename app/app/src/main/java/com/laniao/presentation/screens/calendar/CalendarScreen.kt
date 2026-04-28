@@ -408,7 +408,8 @@ fun CalendarScreen(
         }
         val timePickerState = rememberTimePickerState(
             initialHour = initTime.hour,
-            initialMinute = initTime.minute
+            initialMinute = initTime.minute,
+            is24Hour = true
         )
         var selectedType by remember(exerciseToEdit) { mutableStateOf(exerciseToEdit.exerciseType) }
         var typeMenuExpanded by remember { mutableStateOf(false) }

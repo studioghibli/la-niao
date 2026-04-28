@@ -70,7 +70,8 @@ fun AddEntryDialog(
 
     val timePickerState = rememberTimePickerState(
         initialHour = initialTime.hour,
-        initialMinute = initialTime.minute
+        initialMinute = initialTime.minute,
+        is24Hour = true
     )
 
     // Determine initial date

@@ -161,7 +161,8 @@ fun DateTimePicker(
     if (showTimePicker) {
         val timePickerState = rememberTimePickerState(
             initialHour = localTime.hour,
-            initialMinute = localTime.minute
+            initialMinute = localTime.minute,
+            is24Hour = true
         )
 
         TimePickerDialog(
