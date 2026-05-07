@@ -129,7 +129,7 @@ fun CreateExerciseScheduleDialog(
                 Text("Kegel Exercises", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
 
                 ExerciseType.entries.filter { it.category == ExerciseCategory.KEGEL }.forEach { type ->
-                    ExerciseToggleCard(type, enabled[type] == true, sessions[type]!!, sets[type]!!, reps[type]!!, holds[type]!!,
+                    ExerciseToggleCard(type, enabled[type] == true, sessions[type] ?: type.defaultSessionsPerDay, sets[type] ?: type.defaultSets, reps[type] ?: type.defaultReps, holds[type] ?: type.defaultHoldSeconds,
                         onToggle = { enabled[type] = it },
                         onSessions = { sessions[type] = it },
                         onSets = { sets[type] = it },
@@ -142,7 +142,7 @@ fun CreateExerciseScheduleDialog(
                 Text("Relaxation Exercises", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
 
                 ExerciseType.entries.filter { it.category == ExerciseCategory.RELAXATION }.forEach { type ->
-                    ExerciseToggleCard(type, enabled[type] == true, sessions[type]!!, sets[type]!!, reps[type]!!, holds[type]!!,
+                    ExerciseToggleCard(type, enabled[type] == true, sessions[type] ?: type.defaultSessionsPerDay, sets[type] ?: type.defaultSets, reps[type] ?: type.defaultReps, holds[type] ?: type.defaultHoldSeconds,
                         onToggle = { enabled[type] = it },
                         onSessions = { sessions[type] = it },
                         onSets = { sets[type] = it },
@@ -160,10 +160,10 @@ fun CreateExerciseScheduleDialog(
                         ExerciseScheduleItem(
                             scheduleId = 0,
                             exerciseType = type,
-                            sessionsPerDay = sessions[type]!!,
-                            sets = sets[type]!!,
-                            reps = reps[type]!!,
-                            holdSeconds = holds[type]!!
+                            sessionsPerDay = sessions[type] ?: type.defaultSessionsPerDay,
+                            sets = sets[type] ?: type.defaultSets,
+                            reps = reps[type] ?: type.defaultReps,
+                            holdSeconds = holds[type] ?: type.defaultHoldSeconds
                         )
                     }
                     onCreate(startDate, actualEndDate, items)

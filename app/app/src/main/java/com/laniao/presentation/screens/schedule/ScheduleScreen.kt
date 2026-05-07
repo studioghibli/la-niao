@@ -151,26 +151,29 @@ fun ScheduleScreen(
                         }
 
                         if (hasActiveVoid) {
-                            UnifiedScheduleCard(
-                                typeBadge = "\uD83D\uDEBD",
-                                typeLabel = "Void",
-                                subtitle = "${uiState.activeSchedule!!.intervalMinutes} min interval",
-                                daysRemaining = uiState.activeSchedule!!.daysRemaining(java.time.LocalDate.now()),
-                                onEdit = { viewModel.showEditDialog() },
-                                onDelete = { viewModel.deleteSchedule() },
-                                onCopy = { viewModel.copySchedule(uiState.activeSchedule!!) }
-                            )
+                            uiState.activeSchedule?.let { activeSchedule ->
+                                UnifiedScheduleCard(
+                                    typeBadge = "\uD83D\uDEBD",
+                                    typeLabel = "Void",
+                                    subtitle = "${activeSchedule.intervalMinutes} min interval",
+                                    daysRemaining = activeSchedule.daysRemaining(java.time.LocalDate.now()),
+                                    onEdit = { viewModel.showEditDialog() },
+                                    onDelete = { viewModel.deleteSchedule() },
+                                    onCopy = { viewModel.copySchedule(activeSchedule) }
+                                )
+                            }
                         }
 
                         if (hasActiveExercise) {
-                            UnifiedScheduleCard(
-                                typeBadge = "\uD83D\uDCAA",
-                                typeLabel = "Exercise",
-                                subtitle = "${uiState.exerciseItems.size} exercises",
-                                daysRemaining = uiState.activeExerciseSchedule!!.daysRemaining,
-                                onEdit = { viewModel.showEditExerciseDialog() },
-                                onDelete = { viewModel.deleteExerciseSchedule() },
-                                onCopy = { viewModel.copyExerciseSchedule(uiState.activeExerciseSchedule!!) },
+                            uiState.activeExerciseSchedule?.let { activeExerciseSchedule ->
+                                UnifiedScheduleCard(
+                                    typeBadge = "\uD83D\uDCAA",
+                                    typeLabel = "Exercise",
+                                    subtitle = "${uiState.exerciseItems.size} exercises",
+                                    daysRemaining = activeExerciseSchedule.daysRemaining,
+                                    onEdit = { viewModel.showEditExerciseDialog() },
+                                    onDelete = { viewModel.deleteExerciseSchedule() },
+                                    onCopy = { viewModel.copyExerciseSchedule(activeExerciseSchedule) },
                                 extraContent = {
                                     val kegelItems = uiState.exerciseItems.filter { it.exerciseType.category == com.laniao.domain.model.ExerciseCategory.KEGEL }
                                     val relaxItems = uiState.exerciseItems.filter { it.exerciseType.category == com.laniao.domain.model.ExerciseCategory.RELAXATION }
@@ -215,6 +218,7 @@ fun ScheduleScreen(
                                     }
                                 }
                             )
+                            }
                         }
                     }
                 }
@@ -482,7 +486,9 @@ fun ScheduleScreen(
             onDismiss = { viewModel.hideCreateExerciseDialog() },
             onCreate = { startDate, endDate, items ->
                 if (isEditing) {
-                    viewModel.updateExerciseSchedule(uiState.editingExerciseScheduleId!!, startDate, endDate, items)
+                    uiState.editingExerciseScheduleId?.let { id ->
+                        viewModel.updateExerciseSchedule(id, startDate, endDate, items)
+                    }
                 } else {
                     viewModel.createExerciseSchedule(startDate, endDate, items)
                 }

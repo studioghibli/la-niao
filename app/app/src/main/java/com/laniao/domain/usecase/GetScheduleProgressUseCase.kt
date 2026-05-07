@@ -6,8 +6,10 @@ import com.laniao.domain.repository.ManuallyMissedTimeRepository
 import com.laniao.domain.repository.PeeEntryRepository
 import com.laniao.domain.repository.VoidScheduleRepository
 import com.laniao.util.Clock
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -69,10 +71,19 @@ class GetScheduleProgressUseCase @Inject constructor(
         val entriesFlow = entryRepository.getByDate(date)
         val schedulesFlow = scheduleRepository.getActive()
         val missedFlow = manuallyMissedTimeRepository.getByDate(date)
+        // Tick every 60s so UPCOMING→OVERDUE transitions happen in real-time
+        val tickerFlow = flow {
+            while (true) {
+                emit(Unit)
+                delay(60_000L)
+            }
+        }
         
         return entriesFlow.combine(schedulesFlow) { entries, schedules ->
             Pair(entries, schedules)
         }.combine(missedFlow) { (entries, schedules), manuallyMissedTimes ->
+            Triple(entries, schedules, manuallyMissedTimes)
+        }.combine(tickerFlow) { (entries, schedules, manuallyMissedTimes), _ ->
             val schedule = schedules.firstOrNull { it.isActive(date) }
                 ?: return@combine emptyList()
 

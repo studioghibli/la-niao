@@ -3,6 +3,7 @@ package com.laniao.domain.usecase
 import com.laniao.domain.exception.ValidationException
 import com.laniao.domain.model.PeeEntry
 import com.laniao.domain.repository.PeeEntryRepository
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -54,7 +55,7 @@ class UpdatePeeEntryUseCase @Inject constructor(
         val oldAnchorTime = oldFirstVoid?.timestamp?.atZone(zoneId)?.toLocalTime()
         
         // Also check old date if timestamp changed (entry might have moved dates)
-        val oldDate = oldEntry?.timestamp?.atZone(zoneId)?.toLocalDate()
+        val oldDate: LocalDate? = oldEntry?.timestamp?.atZone(zoneId)?.toLocalDate()
         val dateChanged = oldDate != null && oldDate != entryDate
         
         // Update the entry
@@ -71,8 +72,10 @@ class UpdatePeeEntryUseCase @Inject constructor(
             }
             
             // If entry moved to a different date, also recalculate the old date
-            if (dateChanged) {
-                val oldDateFirstVoid = repository.getFirstVoidOfDay(oldDate!!)
+            // dateChanged is only true when oldDate != null, so the null check is safe
+            @Suppress("KotlinConstantConditions")
+            if (dateChanged && oldDate != null) {
+                val oldDateFirstVoid = repository.getFirstVoidOfDay(oldDate)
                 val oldDateAnchorTime = oldDateFirstVoid?.let {
                     it.timestamp.atZone(zoneId).toLocalTime()
                 }

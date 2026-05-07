@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,11 +57,11 @@ fun CreateScheduleDialog(
 ) {
     var startTime by remember { mutableStateOf(initialStartTime) }
     var endTime by remember { mutableStateOf(initialEndTime) }
-    var intervalMinutes by remember { mutableIntStateOf(initialIntervalMinutes) }
+    var intervalMinutes by rememberSaveable { mutableIntStateOf(initialIntervalMinutes) }
     var startDate by remember { mutableStateOf(initialStartDate) }
     var endDate by remember { mutableStateOf(initialEndDate) }
-    var showStartDatePicker by remember { mutableStateOf(false) }
-    var showEndDatePicker by remember { mutableStateOf(false) }
+    var showStartDatePicker by rememberSaveable { mutableStateOf(false) }
+    var showEndDatePicker by rememberSaveable { mutableStateOf(false) }
 
     val today = remember { LocalDate.now() }
     val durationDays = remember(startDate, endDate) {

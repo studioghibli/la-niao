@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,15 +56,15 @@ fun AddDrinkDialog(
     val zoneId = remember { ZoneId.systemDefault() }
     val isEdit = existingEntry != null
 
-    var selectedType by remember { mutableStateOf(existingEntry?.type ?: DrinkType.WATER) }
-    var selectedUnit by remember { mutableStateOf(existingEntry?.unit ?: DrinkUnit.OZ) }
-    var amountText by remember {
+    var selectedType by rememberSaveable { mutableStateOf(existingEntry?.type ?: DrinkType.WATER) }
+    var selectedUnit by rememberSaveable { mutableStateOf(existingEntry?.unit ?: DrinkUnit.OZ) }
+    var amountText by rememberSaveable {
         mutableStateOf(existingEntry?.amount?.let { "%.0f".format(it) } ?: "")
     }
-    var customName by remember { mutableStateOf(existingEntry?.customName ?: "") }
+    var customName by rememberSaveable { mutableStateOf(existingEntry?.customName ?: "") }
     var showTypeDropdown by remember { mutableStateOf(false) }
 
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     val drinkInitialDate = if (existingEntry != null) {
         existingEntry.timestamp.atZone(zoneId).toLocalDate()

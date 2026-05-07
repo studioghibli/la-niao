@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -85,7 +86,7 @@ fun AddEntryDialog(
     var selectedDate by remember { mutableStateOf(initialDate) }
     var showDatePicker by remember { mutableStateOf(false) }
 
-    var entryType by remember {
+    var entryType by rememberSaveable {
         mutableStateOf(
             when {
                 existingEntry == null -> DialogEntryType.VOID
@@ -95,19 +96,31 @@ fun AddEntryDialog(
             }
         )
     }
-    var leakAmount by remember { mutableStateOf(existingEntry?.leakAmount ?: LeakAmount.NONE) }
-    var volumeSize by remember { mutableStateOf(existingEntry?.volumeSize ?: VolumeSize.UNKNOWN) }
-    var color by remember { mutableStateOf(existingEntry?.color ?: PeeColor.UNKNOWN) }
-    var urgency by remember { mutableStateOf(existingEntry?.urgency ?: Urgency.UNKNOWN) }
-    var notes by remember { mutableStateOf(existingEntry?.notes ?: "") }
+    var leakAmount by rememberSaveable { mutableStateOf(existingEntry?.leakAmount ?: LeakAmount.NONE) }
+    var volumeSize by rememberSaveable { mutableStateOf(existingEntry?.volumeSize ?: VolumeSize.UNKNOWN) }
+    var color by rememberSaveable { mutableStateOf(existingEntry?.color ?: PeeColor.UNKNOWN) }
+    var urgency by rememberSaveable { mutableStateOf(existingEntry?.urgency ?: Urgency.UNKNOWN) }
+    var notes by rememberSaveable { mutableStateOf(existingEntry?.notes ?: "") }
     var selectedScheduledTime by remember { mutableStateOf(existingEntry?.scheduledTime) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
+            val titleText = when {
+                isEditMode -> when (entryType) {
+                    DialogEntryType.VOID -> "Edit Void Entry"
+                    DialogEntryType.URGE_ONLY -> "Edit Urge Entry"
+                    DialogEntryType.LEAK_ONLY -> "Edit Leak Entry"
+                }
+                else -> when (entryType) {
+                    DialogEntryType.VOID -> "Log Void Entry"
+                    DialogEntryType.URGE_ONLY -> "Log Urge Entry"
+                    DialogEntryType.LEAK_ONLY -> "Log Leak Entry"
+                }
+            }
             Text(
-                if (isEditMode) "Edit Void Entry" else "Log Void Entry",
+                titleText,
                 fontWeight = FontWeight.Bold
             )
         },
