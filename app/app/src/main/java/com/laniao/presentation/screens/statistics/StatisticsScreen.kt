@@ -110,123 +110,59 @@ fun StatisticsScreen(
                 }
             } else {
                 // Void Frequency Chart
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                StatisticsCard(
+                    title = "Void Frequency",
+                    subtitle = "Voids per day (colored by dominant pee color)"
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = "Void Frequency",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Voids per day (colored by dominant pee color)",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+                    VoidFrequencyChart(
+                        data = uiState.voidFrequency,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                        VoidFrequencyChart(
-                            data = uiState.voidFrequency,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    val totalVoids = uiState.voidFrequency.sumOf { it.voidCount }
+                    val avgVoids = if (uiState.voidFrequency.isNotEmpty())
+                        totalVoids.toFloat() / uiState.voidFrequency.size
+                    else 0f
+                    val maxDay = uiState.voidFrequency.maxByOrNull { it.voidCount }
 
-                        // Summary stats
-                        val totalVoids = uiState.voidFrequency.sumOf { it.voidCount }
-                        val avgVoids = if (uiState.voidFrequency.isNotEmpty())
-                            totalVoids.toFloat() / uiState.voidFrequency.size
-                        else 0f
-                        val maxDay = uiState.voidFrequency.maxByOrNull { it.voidCount }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("$totalVoids", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Total", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("%.1f".format(avgVoids), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Avg/day", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            if (maxDay != null && maxDay.voidCount > 0) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("${maxDay.voidCount}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("Max", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        StatSummaryItem("$totalVoids", "Total")
+                        StatSummaryItem("%.1f".format(avgVoids), "Avg/day")
+                        if (maxDay != null && maxDay.voidCount > 0) {
+                            StatSummaryItem("${maxDay.voidCount}", "Max")
                         }
                     }
                 }
 
                 // Average Void Gap Card
                 if (uiState.averageVoidGap.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                    StatisticsCard(
+                        title = "Average Gap Between Voids",
+                        subtitle = "Average time between consecutive voids per day"
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(
-                                text = "Average Gap Between Voids",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Average time between consecutive voids per day",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = 12.dp)
-                            )
+                        VoidGapChart(
+                            data = uiState.averageVoidGap,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                            // Bar chart
-                            VoidGapChart(
-                                data = uiState.averageVoidGap,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                        val daysWithData = uiState.averageVoidGap.filter { it.averageGapMinutes > 0 }
+                        val overallAvg = if (daysWithData.isNotEmpty()) daysWithData.map { it.averageGapMinutes }.average() else 0.0
+                        val todayGap = daysWithData.lastOrNull()
+                        val maxGapDay = daysWithData.maxByOrNull { it.averageGapMinutes }
 
-                            val daysWithData = uiState.averageVoidGap.filter { it.averageGapMinutes > 0 }
-                            val overallAvg = if (daysWithData.isNotEmpty()) daysWithData.map { it.averageGapMinutes }.average() else 0.0
-                            val todayGap = daysWithData.lastOrNull()
-                            val maxGapDay = daysWithData.maxByOrNull { it.averageGapMinutes }
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                if (todayGap != null) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = formatGap(todayGap.averageGapMinutes),
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text("Latest day", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                }
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        text = formatGap(overallAvg),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Text("${daysWithData.size}-day avg", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                if (maxGapDay != null) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = formatGap(maxGapDay.averageGapMinutes),
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text("Best", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            if (todayGap != null) {
+                                StatSummaryItem(formatGap(todayGap.averageGapMinutes), "Latest day")
+                            }
+                            StatSummaryItem(formatGap(overallAvg), "${daysWithData.size}-day avg")
+                            if (maxGapDay != null) {
+                                StatSummaryItem(formatGap(maxGapDay.averageGapMinutes), "Best")
                             }
                         }
                     }
@@ -234,163 +170,82 @@ fun StatisticsScreen(
 
                 // Schedule Adherence Chart
                 if (uiState.scheduleAdherence.isNotEmpty()) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                    StatisticsCard(
+                        title = "Schedule Adherence",
+                        subtitle = "% of scheduled voids completed each day"
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(
-                                text = "Schedule Adherence",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "% of scheduled voids completed each day",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                        ScheduleAdherenceChart(
+                            data = uiState.scheduleAdherence,
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                            ScheduleAdherenceChart(
-                                data = uiState.scheduleAdherence,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                        val totalScheduled = uiState.scheduleAdherence.sumOf { it.totalScheduled }
+                        val totalCompleted = uiState.scheduleAdherence.sumOf { it.completed }
+                        val overallRate = if (totalScheduled > 0)
+                            (totalCompleted.toFloat() / totalScheduled * 100f)
+                        else 0f
 
-                            // Summary stats
-                            val totalScheduled = uiState.scheduleAdherence.sumOf { it.totalScheduled }
-                            val totalCompleted = uiState.scheduleAdherence.sumOf { it.completed }
-                            val overallRate = if (totalScheduled > 0)
-                                (totalCompleted.toFloat() / totalScheduled * 100f)
-                            else 0f
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("%.0f%%".format(overallRate), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("Overall", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("$totalCompleted/$totalScheduled", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("Completed", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("${uiState.scheduleAdherence.size}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("Days", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            StatSummaryItem("%.0f%%".format(overallRate), "Overall")
+                            StatSummaryItem("$totalCompleted/$totalScheduled", "Completed")
+                            StatSummaryItem("${uiState.scheduleAdherence.size}", "Days")
                         }
                     }
                 }
 
                 // Liquid Intake Chart
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                StatisticsCard(
+                    title = "Liquid Intake",
+                    subtitle = "Liters consumed per day"
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = "Liquid Intake",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Liters consumed per day",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+                    LiquidIntakeChart(
+                        data = uiState.liquidIntake,
+                        hydrationGoalLiters = uiState.hydrationGoalLiters,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                        LiquidIntakeChart(
-                            data = uiState.liquidIntake,
-                            hydrationGoalLiters = uiState.hydrationGoalLiters,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    val totalLiters = uiState.liquidIntake.sumOf { it.totalLiters }
+                    val avgLiters = if (uiState.liquidIntake.isNotEmpty())
+                        totalLiters / uiState.liquidIntake.size
+                    else 0.0
+                    val maxDay = uiState.liquidIntake.maxByOrNull { it.totalLiters }
 
-                        // Summary stats
-                        val totalLiters = uiState.liquidIntake.sumOf { it.totalLiters }
-                        val avgLiters = if (uiState.liquidIntake.isNotEmpty())
-                            totalLiters / uiState.liquidIntake.size
-                        else 0.0
-                        val maxDay = uiState.liquidIntake.maxByOrNull { it.totalLiters }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("%.1fL".format(totalLiters), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Total", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("%.1fL".format(avgLiters), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Avg/day", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            if (maxDay != null && maxDay.totalLiters > 0) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("%.1fL".format(maxDay.totalLiters), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                    Text("Max", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        StatSummaryItem("%.1fL".format(totalLiters), "Total")
+                        StatSummaryItem("%.1fL".format(avgLiters), "Avg/day")
                     }
                 }
 
                 // Exercise Completion Chart
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                StatisticsCard(
+                    title = "Exercise Completion",
+                    subtitle = "% of scheduled exercises completed each day"
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = "Exercise Completion",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "% of scheduled exercises completed each day",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
+                    ExerciseCompletionChart(
+                        data = uiState.exerciseCompletion,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                        ExerciseCompletionChart(
-                            data = uiState.exerciseCompletion,
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                    val totalReq = uiState.exerciseCompletion.sumOf { it.totalRequired }
+                    val totalDone = uiState.exerciseCompletion.sumOf { it.completed }
+                    val overallRate = if (totalReq > 0)
+                        (totalDone.toFloat() / totalReq * 100f)
+                    else 0f
+                    val activeDays = uiState.exerciseCompletion.count { it.totalRequired > 0 }
 
-                        // Summary stats
-                        val totalReq = uiState.exerciseCompletion.sumOf { it.totalRequired }
-                        val totalDone = uiState.exerciseCompletion.sumOf { it.completed }
-                        val overallRate = if (totalReq > 0)
-                            (totalDone.toFloat() / totalReq * 100f)
-                        else 0f
-                        val activeDays = uiState.exerciseCompletion.count { it.totalRequired > 0 }
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("%.0f%%".format(overallRate), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Overall", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("$totalDone/$totalReq", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Completed", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("$activeDays", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("Active days", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                        }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        StatSummaryItem("%.0f%%".format(overallRate), "Overall")
+                        StatSummaryItem("$totalDone/$totalReq", "Completed")
+                        StatSummaryItem("$activeDays", "Active days")
                     }
                 }
             }
@@ -470,5 +325,48 @@ private fun formatGap(minutes: Double): String {
         hours > 0 && mins > 0 -> "${hours}h ${mins}m"
         hours > 0 -> "${hours}h"
         else -> "${mins}m"
+    }
+}
+
+/** Reusable card wrapper for statistics sections. */
+@Composable
+private fun StatisticsCard(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            content()
+        }
+    }
+}
+
+/** Reusable summary stat item (value + label). */
+@Composable
+private fun StatSummaryItem(
+    value: String,
+    label: String
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

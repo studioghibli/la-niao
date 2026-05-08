@@ -21,6 +21,15 @@ class PeeEntryRepositoryImpl @Inject constructor(
     private val dao: PeeEntryDao
 ) : PeeEntryRepository {
 
+    private val zoneId: ZoneId get() = ZoneId.systemDefault()
+
+    /** Convert a LocalDate to start/end Instants for the day. */
+    private fun LocalDate.dayRange(): Pair<Instant, Instant> {
+        val start = atStartOfDay(zoneId).toInstant()
+        val end = plusDays(1).atStartOfDay(zoneId).toInstant()
+        return start to end
+    }
+
     override suspend fun insert(entry: PeeEntry): Long {
         return dao.insert(entry.toEntity())
     }
@@ -43,16 +52,13 @@ class PeeEntryRepositoryImpl @Inject constructor(
     }
 
     override fun getByDate(date: LocalDate): Flow<List<PeeEntry>> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getByDateRange(startOfDay, endOfDay).map { entities ->
+        val (start, end) = date.dayRange()
+        return dao.getByDateRange(start, end).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
     override fun getByDateRange(startDate: LocalDate, endDate: LocalDate): Flow<List<PeeEntry>> {
-        val zoneId = ZoneId.systemDefault()
         val startInstant = startDate.atStartOfDay(zoneId).toInstant()
         val endInstant = endDate.plusDays(1).atStartOfDay(zoneId).toInstant()
         return dao.getByDateRange(startInstant, endInstant).map { entities ->
@@ -67,72 +73,55 @@ class PeeEntryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCountForDate(date: LocalDate): Int {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getCountByDateRange(startOfDay, endOfDay)
+        val (start, end) = date.dayRange()
+        return dao.getCountByDateRange(start, end)
     }
 
     override suspend fun existsInSameMinute(timestamp: Instant): Boolean {
-        // Truncate to minute boundaries
         val epochSecond = timestamp.epochSecond
         val minuteStart = Instant.ofEpochSecond(epochSecond - (epochSecond % 60))
         val minuteEnd = minuteStart.plusSeconds(60)
-        
         val count = dao.getByMinuteRange(minuteStart, minuteEnd)
         return count > 0
     }
 
     override suspend fun getFirstVoidOfDay(date: LocalDate): PeeEntry? {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getFirstVoidOfDay(startOfDay, endOfDay)?.toDomain()
+        val (start, end) = date.dayRange()
+        return dao.getFirstVoidOfDay(start, end)?.toDomain()
     }
 
     override suspend fun getByScheduledTime(date: LocalDate, scheduledTime: LocalTime): List<PeeEntry> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getByScheduledTime(startOfDay, endOfDay, scheduledTime).map { it.toDomain() }
+        val (start, end) = date.dayRange()
+        return dao.getByScheduledTime(start, end, scheduledTime).map { it.toDomain() }
     }
 
     override suspend fun getEntriesWithScheduledTime(date: LocalDate): List<PeeEntry> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getEntriesWithScheduledTime(startOfDay, endOfDay).map { it.toDomain() }
+        val (start, end) = date.dayRange()
+        return dao.getEntriesWithScheduledTime(start, end).map { it.toDomain() }
     }
 
     override fun getVoidsOnlyByDate(date: LocalDate): Flow<List<PeeEntry>> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getVoidsOnlyByDateRange(startOfDay, endOfDay).map { entities ->
+        val (start, end) = date.dayRange()
+        return dao.getVoidsOnlyByDateRange(start, end).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
     override fun getUrgesOnlyByDate(date: LocalDate): Flow<List<PeeEntry>> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getUrgesOnlyByDateRange(startOfDay, endOfDay).map { entities ->
+        val (start, end) = date.dayRange()
+        return dao.getUrgesOnlyByDateRange(start, end).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
     override fun getLeaksOnlyByDate(date: LocalDate): Flow<List<PeeEntry>> {
-        val zoneId = ZoneId.systemDefault()
-        val startOfDay = date.atStartOfDay(zoneId).toInstant()
-        val endOfDay = date.plusDays(1).atStartOfDay(zoneId).toInstant()
-        return dao.getLeaksOnlyByDateRange(startOfDay, endOfDay).map { entities ->
+        val (start, end) = date.dayRange()
+        return dao.getLeaksOnlyByDateRange(start, end).map { entities ->
             entities.map { it.toDomain() }
         }
     }
 
     override suspend fun clearScheduledTimesForDateRange(startDate: LocalDate, endDate: LocalDate) {
-        val zoneId = ZoneId.systemDefault()
         val rangeStart = startDate.atStartOfDay(zoneId).toInstant()
         val rangeEnd = endDate.plusDays(1).atStartOfDay(zoneId).toInstant()
         dao.clearScheduledTimesInRange(rangeStart, rangeEnd)

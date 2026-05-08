@@ -178,44 +178,8 @@ fun ScheduleScreen(
                                     val kegelItems = uiState.exerciseItems.filter { it.exerciseType.category == com.laniao.domain.model.ExerciseCategory.KEGEL }
                                     val relaxItems = uiState.exerciseItems.filter { it.exerciseType.category == com.laniao.domain.model.ExerciseCategory.RELAXATION }
 
-                                    if (kegelItems.isNotEmpty()) {
-                                        Text("Kegel", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                                        kegelItems.forEach { item ->
-                                            Surface(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                shape = MaterialTheme.shapes.small,
-                                                color = MaterialTheme.colorScheme.surface,
-                                                tonalElevation = 0.dp
-                                            ) {
-                                                Row(
-                                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
-                                                    horizontalArrangement = Arrangement.SpaceBetween
-                                                ) {
-                                                    Text("${item.exerciseType.emoji} ${item.exerciseType.displayName}", style = MaterialTheme.typography.bodyMedium)
-                                                    Text("${item.sessionsPerDay}x/day", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    if (relaxItems.isNotEmpty()) {
-                                        Text("Relaxation", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                                        relaxItems.forEach { item ->
-                                            Surface(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                shape = MaterialTheme.shapes.small,
-                                                color = MaterialTheme.colorScheme.surface,
-                                                tonalElevation = 0.dp
-                                            ) {
-                                                Row(
-                                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
-                                                    horizontalArrangement = Arrangement.SpaceBetween
-                                                ) {
-                                                    Text("${item.exerciseType.emoji} ${item.exerciseType.displayName}", style = MaterialTheme.typography.bodyMedium)
-                                                    Text("${item.sessionsPerDay}x/day", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                                }
-                                            }
-                                        }
-                                    }
+                                    ExerciseItemGroup("Kegel", kegelItems)
+                                    ExerciseItemGroup("Relaxation", relaxItems)
                                 }
                             )
                             }
@@ -852,5 +816,31 @@ private fun EmptyScheduleState(
             icon = { Icon(Icons.Default.Add, contentDescription = null) },
             text = { Text("Create Schedule") }
         )
+    }
+}
+
+/** Reusable composable for rendering a group of exercise items with a label header. */
+@Composable
+private fun ExerciseItemGroup(
+    label: String,
+    items: List<com.laniao.domain.model.ExerciseScheduleItem>
+) {
+    if (items.isEmpty()) return
+    Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+    items.forEach { item ->
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 0.dp
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("${item.exerciseType.emoji} ${item.exerciseType.displayName}", style = MaterialTheme.typography.bodyMedium)
+                Text("${item.sessionsPerDay}x/day", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
