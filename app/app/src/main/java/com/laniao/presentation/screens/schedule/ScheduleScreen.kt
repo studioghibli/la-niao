@@ -170,7 +170,7 @@ fun ScheduleScreen(
                                     typeBadge = "\uD83D\uDCAA",
                                     typeLabel = "Exercise",
                                     subtitle = "${uiState.exerciseItems.size} exercises",
-                                    daysRemaining = activeExerciseSchedule.daysRemaining,
+                                    daysRemaining = activeExerciseSchedule.daysRemaining(),
                                     onEdit = { viewModel.showEditExerciseDialog() },
                                     onDelete = { viewModel.deleteExerciseSchedule() },
                                     onCopy = { viewModel.copyExerciseSchedule(activeExerciseSchedule) },
@@ -750,7 +750,7 @@ private fun ExerciseScheduleCard(
                 Column {
                     Text("Active", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary)
-                    val daysText = schedule.daysRemaining?.let { "$it days remaining" } ?: "No end date"
+                    val daysText = schedule.daysRemaining()?.let { "$it days remaining" } ?: "No end date"
                     Text(daysText, style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }

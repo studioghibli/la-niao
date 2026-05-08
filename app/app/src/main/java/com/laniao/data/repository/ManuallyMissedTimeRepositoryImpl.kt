@@ -3,15 +3,16 @@ package com.laniao.data.repository
 import com.laniao.data.local.dao.ManuallyMissedTimeDao
 import com.laniao.data.local.entity.ManuallyMissedTimeEntity
 import com.laniao.domain.repository.ManuallyMissedTimeRepository
+import com.laniao.util.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
 class ManuallyMissedTimeRepositoryImpl @Inject constructor(
-    private val dao: ManuallyMissedTimeDao
+    private val dao: ManuallyMissedTimeDao,
+    private val clock: Clock
 ) : ManuallyMissedTimeRepository {
 
     override fun getByDate(date: LocalDate): Flow<List<LocalTime>> =
@@ -24,7 +25,7 @@ class ManuallyMissedTimeRepositoryImpl @Inject constructor(
         dao.getByDateOnce(date).map { it.scheduledTime }
 
     override suspend fun markMissed(date: LocalDate, scheduledTime: LocalTime) {
-        dao.insert(ManuallyMissedTimeEntity(date = date, scheduledTime = scheduledTime, createdAt = Instant.now()))
+        dao.insert(ManuallyMissedTimeEntity(date = date, scheduledTime = scheduledTime, createdAt = clock.now()))
     }
 
     override suspend fun unmarkMissed(date: LocalDate, scheduledTime: LocalTime) {
@@ -41,7 +42,7 @@ class ManuallyMissedTimeRepositoryImpl @Inject constructor(
 
     override suspend fun insertAll(items: List<Pair<LocalDate, LocalTime>>) {
         val entities = items.map { (date, time) ->
-            ManuallyMissedTimeEntity(date = date, scheduledTime = time, createdAt = Instant.now())
+            ManuallyMissedTimeEntity(date = date, scheduledTime = time, createdAt = clock.now())
         }
         dao.insertAll(entities)
     }

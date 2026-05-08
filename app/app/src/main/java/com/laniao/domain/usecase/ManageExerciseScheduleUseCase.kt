@@ -3,15 +3,18 @@ package com.laniao.domain.usecase
 import com.laniao.domain.model.ExerciseSchedule
 import com.laniao.domain.model.ExerciseScheduleItem
 import com.laniao.domain.repository.ExerciseRepository
+import com.laniao.util.Clock
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 /**
  * Creates or updates exercise schedules.
  */
 class ManageExerciseScheduleUseCase @Inject constructor(
-    private val repository: ExerciseRepository
+    private val repository: ExerciseRepository,
+    private val clock: Clock
 ) {
     /**
      * Create a new exercise schedule with items.
@@ -45,7 +48,7 @@ class ManageExerciseScheduleUseCase @Inject constructor(
             startDate = startDate,
             endDate = endDate,
             enabled = true,
-            createdAt = LocalDate.now()
+            createdAt = clock.now().atZone(ZoneId.systemDefault()).toLocalDate()
         )
         val scheduleId = repository.insertSchedule(schedule)
 

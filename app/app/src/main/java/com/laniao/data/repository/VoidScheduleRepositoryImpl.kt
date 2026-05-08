@@ -5,9 +5,11 @@ import com.laniao.data.local.entity.VoidScheduleEntity
 import com.laniao.domain.exception.ScheduleOverlapException
 import com.laniao.domain.model.VoidSchedule
 import com.laniao.domain.repository.VoidScheduleRepository
+import com.laniao.util.Clock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +18,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class VoidScheduleRepositoryImpl @Inject constructor(
-    private val dao: VoidScheduleDao
+    private val dao: VoidScheduleDao,
+    private val clock: Clock
 ) : VoidScheduleRepository {
 
     override suspend fun insert(schedule: VoidSchedule): Long {
@@ -45,7 +48,7 @@ class VoidScheduleRepositoryImpl @Inject constructor(
     }
 
     override fun getActive(): Flow<List<VoidSchedule>> {
-        val today = LocalDate.now()
+        val today = clock.now().atZone(ZoneId.systemDefault()).toLocalDate()
         return dao.getActive(today).map { entities ->
             entities.map { it.toDomain() }
         }

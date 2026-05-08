@@ -21,6 +21,7 @@ import com.laniao.domain.usecase.UndoRedoManager
 import com.laniao.domain.usecase.UndoableAction
 import com.laniao.domain.usecase.UpdateVoidScheduleExpiryUseCase
 import com.laniao.domain.repository.ExerciseRepository
+import com.laniao.util.Clock
 import com.laniao.util.DispatcherProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -101,6 +102,7 @@ class ScheduleViewModel @Inject constructor(
     private val getTodayExerciseStatusUseCase: GetTodayExerciseStatusUseCase,
     private val exerciseRepository: ExerciseRepository,
     private val undoRedoManager: UndoRedoManager,
+    private val clock: Clock,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
@@ -115,7 +117,7 @@ class ScheduleViewModel @Inject constructor(
     }
 
     private fun observeScheduleData() {
-        val today = LocalDate.now()
+        val today = clock.now().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
 
         // Observe active void schedules
         viewModelScope.launch(dispatcherProvider.io) {

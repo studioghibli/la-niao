@@ -19,16 +19,13 @@ data class ExerciseSchedule(
     val enabled: Boolean = true,
     val createdAt: LocalDate = LocalDate.now()
 ) {
-    val isActive: Boolean
-        get() {
-            val today = LocalDate.now()
-            return enabled &&
-                !today.isBefore(startDate) &&
-                (endDate == null || !today.isAfter(endDate))
-        }
+    fun isActive(today: LocalDate = LocalDate.now()): Boolean {
+        return enabled &&
+            !today.isBefore(startDate) &&
+            (endDate == null || !today.isAfter(endDate))
+    }
 
-    val daysRemaining: Int?
-        get() = endDate?.let {
-            java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), it).toInt().coerceAtLeast(0)
-        }
+    fun daysRemaining(today: LocalDate = LocalDate.now()): Int? = endDate?.let {
+        java.time.temporal.ChronoUnit.DAYS.between(today, it).toInt().coerceAtLeast(0)
+    }
 }
